@@ -23,7 +23,9 @@ class PostHandler implements HttpHandler {
         if (!exchange.getRequestMethod().equals("POST"))
         {
             error(exchange);
-        } else {
+        }
+        else
+        {
             processPostRequest(exchange);
         }
     }
@@ -32,7 +34,9 @@ class PostHandler implements HttpHandler {
         Json body = parser(exchange);
         if (isInvalidJson(body)) {
             msg(exchange, "format non valide", 400);
-        } else {
+        }
+        else
+        {
             respondAndInitGame(exchange, body);
         }
     }

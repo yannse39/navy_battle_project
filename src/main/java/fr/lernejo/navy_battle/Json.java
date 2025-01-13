@@ -1,6 +1,7 @@
 package fr.lernejo.navy_battle;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 
 class Json {
 
@@ -8,14 +9,12 @@ class Json {
     private final String serverUrl;
     private final String customMessage;
 
-    public Json(
-            @JsonProperty("id") String gameId,
-            @JsonProperty("url") String serverUrl,
-            @JsonProperty("message") String customMessage
-    ) {
-        this.gameId = gameId;
-        this.serverUrl = serverUrl;
-        this.customMessage = customMessage;
+    Json(@JsonProperty("id") JsonNode gameId,
+         @JsonProperty("url") JsonNode serverUrl,
+         @JsonProperty("message") JsonNode customMessage) {
+        this.gameId = gameId.toString();
+        this.serverUrl = serverUrl.toString();
+        this.customMessage = customMessage.toString();
     }
 
     public String getGameId()

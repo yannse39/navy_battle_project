@@ -3,10 +3,10 @@ package fr.lernejo.navy_battle;
 import org.junit.jupiter.api.*;
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.net.URI;
 
 class PostHandlerTest {
     private static Serveur server;
@@ -22,14 +22,8 @@ class PostHandlerTest {
         server = new Serveur(port);
     }
 
-    @AfterEach
-    void tearDown()
-    {
-        // I will try somethong
-    }
-
     @Test
-    void testValidPostRequest() throws IOException, InterruptedException
+    void postReqTest() throws IOException, InterruptedException
     {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -38,26 +32,22 @@ class PostHandlerTest {
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        Assertions.assertEquals(202, response.statusCode(), "Expected 202 for valid POST request");
+        Assertions.assertEquals(202, response.statusCode());
     }
 
     @Test
-    void testInvalidHttpMethod() throws IOException, InterruptedException
+    void another_ping_cheking() throws IOException, InterruptedException
     {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:" + port + "/api/game/start"))
                 .DELETE()
                 .build();
-
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        Assertions.assertEquals(404, response.statusCode(), "Expected 404 for unsupported HTTP method");
+        Assertions.assertEquals(404, response.statusCode());
     }
-
     @Test
-    void testPostRequestWithEmptyJsonFields() throws IOException, InterruptedException
+    void postRequestWithEmptyJsonFields() throws IOException, InterruptedException
     {
         HttpClient client = HttpClient.newHttpClient();
         String jsonBody = "{\"id\":\"\", \"url\":\"\", \"message\":\"\"}";
@@ -67,12 +57,10 @@ class PostHandlerTest {
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        Assertions.assertEquals(400, response.statusCode(), "Expected 400 for POST request with empty JSON fields");
+        Assertions.assertEquals(400, response.statusCode());
     }
-
     @Test
-    void testPostRequestWithLogicalInvalidJson() throws IOException, InterruptedException
+    void postRequestWithLogicalInvalidJson() throws IOException, InterruptedException
     {
         HttpClient client = HttpClient.newHttpClient();
         String jsonBody = "{\"id\":\"invalidId\", \"url\":\"http://invalid\", \"message\":\"Test Message\"}";
@@ -82,7 +70,10 @@ class PostHandlerTest {
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Assertions.assertEquals(202, response.statusCode());
 
-        Assertions.assertEquals(202, response.statusCode(), "Expected 202 for POST request with logically invalid JSON");
     }
+
+
+
 }
