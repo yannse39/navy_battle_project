@@ -22,6 +22,17 @@ class Jeu {
         System.out.println(send.body());
 
     }
+    public void fire(String adversaryUrl, String cell) throws IOException, InterruptedException
+    {
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(adversaryUrl + "/api/game/fire?cell=" + cell))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        System.out.println("Fire response: " + response.body());
+    }
     Jeu(Json body1, Json body2)
     {
         this.Adversary = body1;
