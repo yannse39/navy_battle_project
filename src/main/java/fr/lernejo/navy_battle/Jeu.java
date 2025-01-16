@@ -1,28 +1,46 @@
 package fr.lernejo.navy_battle;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-class Jeu {
-    private final Json Adversary;
+public class Jeu {
+    private final String adversaryUrl;
+    private final String playerUrl;
 
-    public void initGame() throws IOException, InterruptedException
+    public Jeu(Json body, Json playerInfo)
     {
-        HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(URI.create(Adversary.getServerUrl().substring(1, Adversary.getServerUrl().length() - 1) + "/api/game/fire?cell=A1"))
-                .header("Accept", "application/json")
-                .header("Content-Type", "application/json")
-                .GET()
-                .build();
-        HttpResponse<String> send = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        System.out.println(send.body());
-
+        this.adversaryUrl = body.getServerUrl();
+        this.playerUrl = playerInfo.getServerUrl();
     }
-    public void fire(String adversaryUrl, String cell) throws IOException, InterruptedException
+
+    public void startGame() throws IOException, InterruptedException
+    {
+        System.out.println("Game started. Sending first fire request...");
+        gameLoop();
+    }
+
+    public void gameLoop() throws IOException, InterruptedException {
+        while (true)
+        {
+            String cellToFire = calculateNextCell();
+            String fireResponse = sendFireRequest(this.adversaryUrl, cellToFire);
+
+            if (isGameOver(fireResponse))
+            {
+                System.out.println("Game over! You win!");
+                break;
+            }
+
+            waitForAdversaryFire();
+        }
+    }
+
+    public String sendFireRequest(String adversaryUrl, String cell) throws IOException, InterruptedException
     {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -32,9 +50,27 @@ class Jeu {
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         System.out.println("Fire response: " + response.body());
+
+        return response.body();
     }
-    Jeu(Json body1, Json body2)
+
+    private boolean isGameOver(String responseBody) throws IOException
     {
-        this.Adversary = body1;
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode response = objectMapper.readTree(responseBody);
+        boolean shipLeft = response.get("shipLeft").asBoolean();
+        return !shipLeft;
+    }
+
+    private void waitForAdversaryFire()
+    {
+        System.out.println("Waiting for adversary fire...");
+
+    }
+
+    private String calculateNextCell()
+    {
+
+        return "A1";
     }
 }
