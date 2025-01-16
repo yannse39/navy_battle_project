@@ -49,7 +49,7 @@ class PostHandler implements HttpHandler {
         msg(exchange, "{\n\t\"id\":\"" + UUID.randomUUID() + "\",\n\t\"url\":\"" + this.stringBuilder + "\",\n\t\"message\":\"May the best code win\"\n}", 202);
         var game = new Jeu(body, body);
         try {
-            game.startGame();
+            game.initGame();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
